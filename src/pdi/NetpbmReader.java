@@ -9,26 +9,49 @@ public class NetpbmReader {
     private String magicIdentifier;
     private int columns;
     private int lines;
+    private short maxVal;
     private short bpp;
     private Scanner fileScanner;
+    private BufferedInputStream bufferedInputStream;
+    private int currentByte;
+    private short bytePosition;
 
-    private void readHeader() throws FileNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(this.file);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-        this.fileScanner = new Scanner(bufferedInputStream);
+    private int readHeader() throws FileNotFoundException {
+        FileInputStream scannerFIS = new FileInputStream(this.file);
+        BufferedInputStream scannerBIS = new BufferedInputStream(scannerFIS);
+        this.fileScanner = new Scanner(scannerBIS);
+        int movedBytes = 0;
 
         // Pulando até encontrar primeiro número inteiro (colunas)
         while (!this.fileScanner.hasNextInt()) {
-            this.fileScanner.nextLine();
+            String ignoredLine = this.fileScanner.nextLine();
+            movedBytes += ignoredLine.length() + 1;
         }
 
         // Guarda número de colunas e linhas
-        this.columns = this.fileScanner.nextInt();
-        this.lines = this.fileScanner.nextInt();
+        String columnsLines = this.fileScanner.nextLine();
+        movedBytes += columnsLines.length() + 1;
+
+        // Extraindo valores de colunas e linhas
+        Scanner columnsLinesScanner = new Scanner(columnsLines);
+        this.columns = columnsLinesScanner.nextInt();
+        this.lines = columnsLinesScanner.nextInt();
+        columnsLinesScanner.close();
+
         // Valor máximo assumido por um pixel
-        short maxVal = this.fileScanner.nextShort();
+        String maxValLine = this.fileScanner.nextLine();
+        movedBytes += maxValLine.length() + 1;
+
+        // Extraindo valor máximo assumido por um pixel
+        Scanner maxValScanner = new Scanner(maxValLine);
+        this.maxVal = maxValScanner.nextShort();
+        maxValScanner.close();
+
         // Utiliza o número máximo assumido por um pixel para determinar o BPP
         this.bpp = (short) Math.ceil(Math.log(maxVal + 1) / Math.log(2));
+
+        // Retorna número de bytes no header
+        return movedBytes;
     }
 
     // =================================================================
@@ -72,31 +95,40 @@ public class NetpbmReader {
         // Lendo valores ASCII
         for (int i = 0; i < lines; i++) {
             for (int j = 0; j < columns; j++) {
-                grayChannel.set(i, j, fileScanner.nextShort());
+                grayChannel.set(i, j, this.fileScanner.nextShort());
             }
         }
 
-        fileScanner.close();
+        this.fileScanner.close();
         return new PGM(grayChannel);
     }
 
     private PGM readPGMRaw() throws IOException {
         // Lê cabeçalho e lê informações sobre dimensionalidade e valor máximo
-        readHeader();
+        int movedBytes = readHeader();
+        // Não utiliza mais o fileScanner
+        this.fileScanner.close();
+
+        this.bufferedInputStream = new BufferedInputStream(new FileInputStream(this.file));
+        long actuallyMovedBytes = this.bufferedInputStream.skip(movedBytes);
+
+        // Verifica se o número de bytes pulados é igual ao número de bytes no header
+        if (actuallyMovedBytes != movedBytes) {
+            throw new IOException("Erro ao pular bytes do cabeçalho.");
+        }
 
         // Inicializando canal
-        Channel grayChannel = new Channel(this.lines, this.columns, this.bpp);
+        Channel grayChannel = new Channel(this.lines, this.columns, this.maxVal);
 
-        // TODO - Encontrar forma de ler byte a byte
-
+        this.currentByte = -1;
+        this.bytePosition = 8;
         for (int i = 0; i < this.lines; i++) {
             for (int j = 0; j < this.columns; j++) {
-                // TODO - Definir função que lê byte a byte
                 grayChannel.set(i, j, readNextPixel());
             }
         }
 
-        this.fileScanner.close();
+        this.bufferedInputStream.close();
         return new PGM(grayChannel);
     }
 
@@ -155,25 +187,34 @@ public class NetpbmReader {
 
     private PPM readPPMRaw() throws IOException {
         // Lê cabeçalho e lê informações sobre dimensionalidade e valor máximo
-        readHeader();
+        int movedBytes = readHeader();
+        // Não utiliza mais o fileScanner
+        this.fileScanner.close();
+
+        this.bufferedInputStream = new BufferedInputStream(new FileInputStream(this.file));
+        long actuallyMovedBytes = this.bufferedInputStream.skip(movedBytes);
+
+        // Verifica se o número de bytes pulados é igual ao número de bytes no header
+        if (actuallyMovedBytes != movedBytes) {
+            throw new IOException("Erro ao pular bytes do cabeçalho.");
+        }
 
         // Inicializando canais de cores
-        Channel redChannel = new Channel(this.lines, this.columns, this.bpp);
-        Channel greenChannel = new Channel(this.lines, this.columns, this.bpp);
-        Channel blueChannel = new Channel(this.lines, this.columns, this.bpp);
+        Channel redChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel greenChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel blueChannel = new Channel(this.lines, this.columns, this.maxVal);
 
-        // TODO - Encontrar forma de ler byte a byte
-
+        this.currentByte = -1;
+        this.bytePosition = 8;
         for (int i = 0; i < this.lines; i++) {
             for (int j = 0; j < this.columns; j++) {
-                // TODO - Definir função que lê byte a byte
                 redChannel.set(i, j, readNextPixel());
                 greenChannel.set(i, j, readNextPixel());
                 blueChannel.set(i, j, readNextPixel());
             }
         }
 
-        this.fileScanner.close();
+        this.bufferedInputStream.close();
         return new PPM(redChannel, greenChannel, blueChannel);
     }
 
@@ -181,8 +222,17 @@ public class NetpbmReader {
     // Funções não implementadas
     // =================================================================
 
-    private short readNextPixel() {
-        // TODO - Lógica de leitura de byte a byte
-        return 0;
+    private short readNextPixel() throws IOException {
+        StringBuilder bits = new StringBuilder();
+        for (short i = 0; i < bpp; i++) {
+            if (this.bytePosition == 8) {
+                this.currentByte = this.bufferedInputStream.read();
+                this.bytePosition = 0;
+            }
+            bits.append((this.currentByte >> (7 - this.bytePosition)) & 1);
+            this.bytePosition++;
+        }
+
+        return Short.parseShort(bits.toString(), 2);
     }
 }
