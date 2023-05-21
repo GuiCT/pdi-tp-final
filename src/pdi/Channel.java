@@ -31,4 +31,12 @@ public class Channel {
     public short getMaxValue() {
         return this.maxValue;
     }
+
+    public Channel cloneChannel() {
+        Channel newChannel = new Channel(this.width, this.height, this.maxValue);
+        for (int i = 0; i < this.height; i++) {
+            System.arraycopy(this.data[i], 0, newChannel.data[i], 0, this.width);
+        }
+        return newChannel;
+    }
 }

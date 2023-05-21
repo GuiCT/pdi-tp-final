@@ -1,4 +1,7 @@
-package pdi;
+package pdi.io;
+
+import pdi.PGM;
+import pdi.PPM;
 
 import java.io.*;
 

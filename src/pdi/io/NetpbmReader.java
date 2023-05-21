@@ -1,4 +1,8 @@
-package pdi;
+package pdi.io;
+
+import pdi.Channel;
+import pdi.PGM;
+import pdi.PPM;
 
 import java.io.*;
 import java.util.Scanner;

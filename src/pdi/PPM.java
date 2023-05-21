@@ -1,7 +1,7 @@
 package pdi;
 
-import java.io.*;
-import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class PPM {
     private Channel redChannel;
