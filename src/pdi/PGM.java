@@ -1,31 +1,31 @@
 package pdi;
 
 import java.io.*;
-import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class PGM {
-    private Channel channel;
+    private Channel grayChannel;
 
-    PGM(Channel channel) {
-        this.channel = channel;
+    PGM(Channel grayChannel) {
+        this.grayChannel = grayChannel;
     }
 
-    public void saveFile(String filePath) throws IOException {
-        try (FileWriter fileWriter = new FileWriter(filePath)) {
-            // Por padrão, usa formato ASCII
-            // Cabeçalho: P2, largura, altura, valor máximo
-            fileWriter.write("P2\n");
-            fileWriter.write(this.channel.width + " " + this.channel.height + "\n");
-            fileWriter.write(this.channel.getMaxValue() + "\n");
-            // Escreve cada valor do canal, separado por espaço
-            // Quando chega ao fim de uma linha, pula linha no arquivo texto
-            for (int i = 0; i < this.channel.height; i++) {
-                for (int j = 0; j < this.channel.width; j++) {
-                    fileWriter.write(this.channel.get(i, j) + " ");
-                }
-                fileWriter.write("\n");
-            }
-        }
+    public int getWidth() {
+        return this.grayChannel.width;
+    }
+
+    public int getHeight() {
+        return this.grayChannel.height;
+    }
+
+    public short getMaxValue() {
+        return this.grayChannel.getMaxValue();
+    }
+
+    public short get(int i, int j) {
+        return this.grayChannel.get(i, j);
+    }
+
+    public void set(int i, int j, short value) {
+        this.grayChannel.set(i, j, value);
     }
 }

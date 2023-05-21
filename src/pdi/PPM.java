@@ -14,6 +14,42 @@ public class PPM {
         this.blueChannel = blueChannel;
     }
 
+    public int getWidth() {
+        return this.redChannel.width;
+    }
+
+    public int getHeight() {
+        return this.redChannel.height;
+    }
+
+    public short getMaxValue() {
+        return this.redChannel.getMaxValue();
+    }
+
+    public short getRed(int i, int j) {
+        return this.redChannel.get(i, j);
+    }
+
+    public short getGreen(int i, int j) {
+        return this.greenChannel.get(i, j);
+    }
+
+    public short getBlue(int i, int j) {
+        return this.blueChannel.get(i, j);
+    }
+
+    public void setRed(int i, int j, short value) {
+        this.redChannel.set(i, j, value);
+    }
+
+    public void setGreen(int i, int j, short value) {
+        this.greenChannel.set(i, j, value);
+    }
+
+    public void setBlue(int i, int j, short value) {
+        this.blueChannel.set(i, j, value);
+    }
+
     public void saveFile(String filePath) throws IOException {
         try (FileWriter fileWriter = new FileWriter(filePath)) {
             // Por padrão, usa formato ASCII

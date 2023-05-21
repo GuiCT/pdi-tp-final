@@ -90,7 +90,7 @@ public class NetpbmReader {
         readHeader();
 
         // Inicializando canal
-        Channel grayChannel = new Channel(this.lines, this.columns, this.bpp);
+        Channel grayChannel = new Channel(this.lines, this.columns, this.maxVal);
 
         // Lendo valores ASCII
         for (int i = 0; i < lines; i++) {
