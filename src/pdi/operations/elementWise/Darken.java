@@ -1,4 +1,4 @@
-package pdi.operations;
+package pdi.operations.elementWise;
 
 public class Darken implements ElementWiseOperation {
     private final short subtrahend;

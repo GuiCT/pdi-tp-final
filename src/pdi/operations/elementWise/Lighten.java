@@ -1,4 +1,4 @@
-package pdi.operations;
+package pdi.operations.elementWise;
 
 public class Lighten implements ElementWiseOperation {
     private final short summand;

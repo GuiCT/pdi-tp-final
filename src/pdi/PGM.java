@@ -1,6 +1,7 @@
 package pdi;
 
-import pdi.operations.ElementWiseOperation;
+import pdi.operations.areaWise.Mask;
+import pdi.operations.elementWise.ElementWiseOperation;
 
 public class PGM {
     private Channel grayChannel;
@@ -35,14 +36,22 @@ public class PGM {
     }
 
     public PGM elementWiseOperation(ElementWiseOperation operation) {
-        PGM newPGM = this.clonePGM();
-        for (int i = 0; i < newPGM.getWidth(); i++) {
-            for (int j = 0; j < newPGM.getHeight(); j++) {
-                short value = this.get(i, j);
-                newPGM.set(i, j, operation.apply(value, newPGM.getMaxValue()));
-            }
-        }
+        Channel newChannel = this.grayChannel.elementWiseOperation(operation);
 
-        return newPGM;
+        return new PGM(newChannel);
+    }
+
+    public PGM maskOperation(Mask operation) {
+        Channel newChannel = this.grayChannel.maskOperation(operation);
+
+        return new PGM(newChannel);
+    }
+
+    public PGM plus(PGM addend) {
+        return new PGM(this.grayChannel.plus(addend.grayChannel));
+    }
+
+    public PGM minus(PGM subtrahend) {
+        return new PGM(this.grayChannel.minus(subtrahend.grayChannel));
     }
 }
