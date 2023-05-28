@@ -1,9 +1,6 @@
 import pdi.PGM;
 import pdi.io.NetpbmReader;
 import pdi.io.NetpbmWriter;
-import pdi.operations.areaWise.Median;
-import pdi.operations.elementWise.Darken;
-import pdi.operations.elementWise.Lighten;
 import pdi.operations.sequential.HighBoostPGM;
 
 import java.io.IOException;

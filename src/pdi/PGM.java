@@ -4,7 +4,7 @@ import pdi.operations.areaWise.Mask;
 import pdi.operations.elementWise.ElementWiseOperation;
 
 public class PGM {
-    private Channel grayChannel;
+    private final Channel grayChannel;
 
     public PGM(Channel grayChannel) {
         this.grayChannel = grayChannel;
@@ -18,20 +18,20 @@ public class PGM {
         return this.grayChannel.height;
     }
 
-    public short getMaxValue() {
-        return this.grayChannel.getMaxValue();
+    public int getMaxValue() {
+        return this.grayChannel.maxValue;
     }
 
-    public short get(int i, int j) {
+    public int get(int i, int j) {
         return this.grayChannel.get(i, j);
     }
 
-    public void set(int i, int j, short value) {
+    public void set(int i, int j, int value) {
         this.grayChannel.set(i, j, value);
     }
 
-    public PGM clonePGM() {
-        Channel newGrayChannel = this.grayChannel.cloneChannel();
+    public PGM copyPGM() {
+        Channel newGrayChannel = this.grayChannel.copyChannel();
         return new PGM(newGrayChannel);
     }
 

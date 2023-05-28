@@ -11,7 +11,7 @@ public class NetpbmWriter {
     private final String filePath;
     private final int columns;
     private final int lines;
-    private final short maxVal;
+    private final int maxVal;
     private File file;
     private boolean binary;
     private FileWriter fileWriter;
@@ -33,7 +33,7 @@ public class NetpbmWriter {
             throw new InvalidObjectException("Imagem não é suportada");
         }
 
-        short bpp = (short) Math.ceil(Math.log(this.maxVal) / Math.log(2));
+        int bpp = (int) Math.ceil(Math.log(this.maxVal) / Math.log(2));
 
         if (bpp != 8) {
             throw new UnsupportedOperationException("BPP não suportado");

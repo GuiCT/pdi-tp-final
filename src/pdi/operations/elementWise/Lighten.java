@@ -1,17 +1,15 @@
 package pdi.operations.elementWise;
 
 public class Lighten implements ElementWiseOperation {
-    private final short summand;
+    private final int summand;
 
-    public Lighten(short summand) {
-        if (summand <= 0) {
-            throw new IllegalArgumentException("Valor somado deve ser maior que zero");
-        }
+    public Lighten(int summand) {
+        assert summand > 0 : "Valor somado deve ser maior que zero";
         this.summand = summand;
     }
 
     @Override
-    public short apply(short value, short maxValue) {
-        return (short) Math.min(value + this.summand, maxValue);
+    public int apply(int value, int maxValue) {
+        return Math.min(value + this.summand, maxValue);
     }
 }

@@ -1,12 +1,8 @@
 package pdi.operations.sequential;
 
 import pdi.PGM;
-import pdi.io.NetpbmWriter;
 import pdi.operations.areaWise.Mean;
 import pdi.operations.elementWise.ScalarMultiplication;
-
-import java.io.IOException;
-import java.io.InvalidObjectException;
 
 public class HighBoostPGM {
     private final PGM pgm;
@@ -19,7 +15,7 @@ public class HighBoostPGM {
         this.k = k;
     }
 
-    public PGM apply() throws InvalidObjectException {
+    public PGM apply() {
         // Borra utilizando média
         PGM blurred = this.pgm.maskOperation(new Mean(medianSize));
         // Diferença

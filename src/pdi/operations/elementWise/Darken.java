@@ -1,16 +1,15 @@
 package pdi.operations.elementWise;
 
 public class Darken implements ElementWiseOperation {
-    private final short subtrahend;
+    private final int subtrahend;
 
-    public Darken(short subtrahend) {
-        if (subtrahend <= 0)
-            throw new IllegalArgumentException("Subtraendo deve ser maior que zero");
+    public Darken(int subtrahend) {
+        assert subtrahend > 0 : "Subtraendo deve ser maior que zero";
         this.subtrahend = subtrahend;
     }
 
     @Override
-    public short apply(short value, short maxValue) {
-        return (short) Math.max(value - this.subtrahend, 0);
+    public int apply(int value, int maxValue) {
+        return Math.max(value - this.subtrahend, 0);
     }
 }

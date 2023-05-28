@@ -9,10 +9,10 @@ public class Median extends Mask {
     }
 
     @Override
-    public short apply(List<Short> values, short maxValue) {
+    public int apply(List<Integer> values, int maxValue) {
         // Ordenando valores de entrada
-        List<Short> sorted = new ArrayList<>(values);
-        sorted.sort(Short::compare);
+        List<Integer> sorted = new ArrayList<>(values);
+        sorted.sort(Integer::compare);
         return sorted.get(sorted.size() / 2);
     }
 }

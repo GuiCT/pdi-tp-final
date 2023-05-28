@@ -4,14 +4,12 @@ public class ScalarMultiplication implements ElementWiseOperation {
     private final double factor;
 
     public ScalarMultiplication(double factor) {
-        if (factor <= 0) {
-            throw new IllegalArgumentException("Fator deve ser maior ou igual a zero");
-        }
+        assert factor > 0 : "Fator deve ser maior a zero";
         this.factor = factor;
     }
 
     @Override
-    public short apply(short value, short maxValue) {
-        return (short) Math.min(value * this.factor, maxValue);
+    public int apply(int value, int maxValue) {
+        return (int) Math.min(value * this.factor, maxValue);
     }
 }

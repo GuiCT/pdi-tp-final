@@ -1,6 +1,5 @@
 package pdi.operations.areaWise;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Mean extends Mask {
@@ -9,11 +8,8 @@ public class Mean extends Mask {
     }
 
     @Override
-    public short apply(List<Short> values, short maxValue) {
-        int sum = 0;
-        for (Short value : values) {
-            sum += value;
-        }
-        return (short) (sum / values.size());
+    public int apply(List<Integer> values, int maxValue) {
+        int sum = values.stream().reduce(0, Integer::sum);
+        return (sum / values.size());
     }
 }

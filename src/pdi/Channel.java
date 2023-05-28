@@ -8,57 +8,70 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Channel {
-    private short data[][];
-    private short maxValue;
     public final int width;
     public final int height;
+    public final int maxValue;
+    private final int[][] data;
 
-    public Channel(int width, int height, short maxValue) {
+    public Channel(int width, int height, int maxValue) {
         this.width = width;
         this.height = height;
         this.maxValue = maxValue;
-        this.data = new short[height][width];
+        this.data = new int[height][width];
     }
 
-    public void set(int i, int j, short value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("Valor do pixel deve ser maior ou igual a zero");
-        } else if (value > this.maxValue) {
-            throw new IllegalArgumentException("Valor do pixel deve ser menor ou igual ao valor máximo");
-        } else {
-            this.data[i][j] = value;
-        }
+    public void set(int i, int j, int value) {
+        assert (value > 0) : "Valor do pixel deve ser maior ou igual a zero";
+        assert (value <= this.maxValue) : "Valor do pixel deve ser menor ou igual ao valor máximo";
+        this.data[i][j] = value;
     }
 
-    public short get(int i, int j) {
+    public int get(int i, int j) {
         return this.data[i][j];
-    }
-
-    public short getMaxValue() {
-        return this.maxValue;
     }
 
     public Channel cloneChannel() {
         return new Channel(this.width, this.height, this.maxValue);
     }
 
-    public Channel elementWiseOperation(ElementWiseOperation operation) {
+    public Channel copyChannel() {
         Channel newChannel = this.cloneChannel();
         for (int i = 0; i < newChannel.height; i++) {
             for (int j = 0; j < newChannel.width; j++) {
-                short value = this.data[i][j];
-                newChannel.set(i, j, operation.apply(value, newChannel.maxValue));
+                newChannel.set(i, j, this.data[i][j]);
             }
         }
 
         return newChannel;
     }
 
+    public Channel elementWiseOperation(ElementWiseOperation operation) {
+        Channel newChannel = this.cloneChannel();
+        for (int i = 0; i < newChannel.height; i++) {
+            for (int j = 0; j < newChannel.width; j++) {
+                newChannel.set(i, j, operation.apply(this.data[i][j], newChannel.maxValue));
+            }
+        }
+
+        return newChannel;
+    }
+
+    public Channel elementWiseOperation(ElementWiseOperation[] operations) {
+        ElementWiseOperation compositeOperation = (value, maxValue) -> {
+            int result = value;
+            for (ElementWiseOperation operation : operations) {
+                result = operation.apply(result, maxValue);
+            }
+            return result;
+        };
+
+        return this.elementWiseOperation(compositeOperation);
+    }
+
     public Channel maskOperation(Mask operation) {
         Channel newChannel = this.cloneChannel();
         for (int i = 0; i < newChannel.height; i++) {
             for (int j = 0; j < newChannel.width; j++) {
-                short value = this.data[i][j];
                 newChannel.set(i, j, operation.apply(
                         selectPixels(i, j, operation.size),
                         newChannel.maxValue
@@ -77,7 +90,8 @@ public class Channel {
 
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
-                difference.set(i, j, (short) Math.min(Math.max(0, this.data[i][j] - subtrahend.data[i][j]), this.maxValue));
+                int result = this.data[i][j] - subtrahend.data[i][j];
+                difference.set(i, j, Math.min(Math.max(0, result), this.maxValue));
             }
         }
 
@@ -92,15 +106,16 @@ public class Channel {
 
         for (int i = 0; i < this.height; i++) {
             for (int j = 0; j < this.width; j++) {
-                sum.set(i, j, (short) Math.min(Math.max(0, this.data[i][j] + addend.data[i][j]), this.maxValue));
+                int result = this.data[i][j] + addend.data[i][j];
+                sum.set(i, j, Math.min(Math.max(0, result), this.maxValue));
             }
         }
 
         return sum;
     }
 
-    private List<Short> selectPixels(int i, int j, int size) {
-        List<Short> pixels = new ArrayList<>();
+    private List<Integer> selectPixels(int i, int j, int size) {
+        List<Integer> pixels = new ArrayList<>();
         int startValue = -(size - 1) / 2;
 
         for (int ki = 0; ki < size; ki++) {
@@ -111,7 +126,7 @@ public class Channel {
                         (iMoved < 0 || iMoved >= this.height) ||
                                 (jMoved < 0 || jMoved >= this.width)
                 ) {
-                    pixels.add((short) 0);
+                    pixels.add(0);
                 } else {
                     pixels.add(this.data[iMoved][jMoved]);
                 }
