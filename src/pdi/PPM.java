@@ -1,7 +1,7 @@
 package pdi;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import pdi.operations.areaWise.Mask;
+import pdi.operations.elementWise.ElementWiseOperation;
 
 public class PPM {
     private final Channel redChannel;
@@ -50,23 +50,66 @@ public class PPM {
         this.blueChannel.set(i, j, value);
     }
 
-    public void saveFile(String filePath) throws IOException {
-        try (FileWriter fileWriter = new FileWriter(filePath)) {
-            // Por padrão, usa formato ASCII
-            // Cabeçalho: P3, largura, altura, valor máximo
-            fileWriter.write("P3\n");
-            fileWriter.write(this.redChannel.width + " " + this.redChannel.height + "\n");
-            fileWriter.write(this.redChannel.maxValue + "\n");
-            // Escreve cada valor do canal, separado por espaço
-            // Quando chega ao fim de uma linha, pula linha no arquivo texto
-            for (int i = 0; i < this.redChannel.height; i++) {
-                for (int j = 0; j < this.redChannel.width; j++) {
-                    fileWriter.write(this.redChannel.get(i, j) + " ");
-                    fileWriter.write(this.greenChannel.get(i, j) + " ");
-                    fileWriter.write(this.blueChannel.get(i, j) + " ");
-                }
-                fileWriter.write("\n");
-            }
-        }
+    public PPM copyPPM() {
+        Channel newRedChannel = this.redChannel.copyChannel();
+        Channel newGreenChannel = this.greenChannel.copyChannel();
+        Channel newBlueChannel = this.blueChannel.copyChannel();
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
+    public PPM elementWiseOperation(ElementWiseOperation operation) {
+        Channel newRedChannel = this.redChannel.elementWiseOperation(operation);
+        Channel newGreenChannel = this.greenChannel.elementWiseOperation(operation);
+        Channel newBlueChannel = this.blueChannel.elementWiseOperation(operation);
+
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
+    public PPM elementWiseOperation(
+            ElementWiseOperation redOp,
+            ElementWiseOperation greenOp,
+            ElementWiseOperation blueOp
+    ) {
+        Channel newRedChannel = this.redChannel.elementWiseOperation(redOp);
+        Channel newGreenChannel = this.greenChannel.elementWiseOperation(greenOp);
+        Channel newBlueChannel = this.blueChannel.elementWiseOperation(blueOp);
+
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
+    public PPM maskOperation(Mask operation) {
+        Channel newRedChannel = this.redChannel.maskOperation(operation);
+        Channel newGreenChannel = this.greenChannel.maskOperation(operation);
+        Channel newBlueChannel = this.blueChannel.maskOperation(operation);
+
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
+    public PPM maskOperation(
+            Mask greenOp,
+            Mask blueOp,
+            Mask redOp
+    ) {
+        Channel newRedChannel = this.redChannel.maskOperation(redOp);
+        Channel newGreenChannel = this.greenChannel.maskOperation(greenOp);
+        Channel newBlueChannel = this.blueChannel.maskOperation(blueOp);
+
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
+    public PPM plus(PPM addend) {
+        return new PPM(
+                this.redChannel.plus(addend.redChannel),
+                this.greenChannel.plus(addend.greenChannel),
+                this.blueChannel.plus(addend.blueChannel)
+        );
+    }
+
+    public PPM minus(PPM subtrahend) {
+        return new PPM(
+                this.redChannel.minus(subtrahend.redChannel),
+                this.greenChannel.minus(subtrahend.greenChannel),
+                this.blueChannel.minus(subtrahend.blueChannel)
+        );
     }
 }

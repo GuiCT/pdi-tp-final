@@ -114,6 +114,16 @@ public class Channel {
         return sum;
     }
 
+    public int[] getHistogram() {
+        int[] histogram = new int[this.maxValue + 1];
+        for (int i = 0; i < this.height; i++) {
+            for (int j = 0; j < this.width; j++)
+                histogram[this.data[i][j]]++;
+        }
+
+        return histogram;
+    }
+
     private List<Integer> selectPixels(int i, int j, int size) {
         List<Integer> pixels = new ArrayList<>();
         int startValue = -(size - 1) / 2;
