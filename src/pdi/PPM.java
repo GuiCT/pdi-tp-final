@@ -50,12 +50,19 @@ public class PPM {
         this.blueChannel.set(i, j, value);
     }
 
+    public PPM clonePPM() {
+        Channel newRedChannel = this.redChannel.cloneChannel();
+        Channel newGreenChannel = this.greenChannel.cloneChannel();
+        Channel newBlueChannel = this.blueChannel.cloneChannel();
+        return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
+    }
+
     public PPM copyPPM() {
         Channel newRedChannel = this.redChannel.copyChannel();
         Channel newGreenChannel = this.greenChannel.copyChannel();
         Channel newBlueChannel = this.blueChannel.copyChannel();
         return new PPM(newRedChannel, newGreenChannel, newBlueChannel);
-    }
+    }    
 
     public PPM elementWiseOperation(ElementWiseOperation operation) {
         Channel newRedChannel = this.redChannel.elementWiseOperation(operation);
@@ -112,4 +119,30 @@ public class PPM {
                 this.blueChannel.minus(subtrahend.blueChannel)
         );
     }
+
+    public Channel[] extractChannels() {
+        return new Channel[] {
+            this.redChannel.copyChannel(),
+            this.greenChannel.copyChannel(),
+            this.blueChannel.copyChannel()
+        };
+    }
+
+    public PPM permutateChannels(String order) {
+        assert (order.matches("^[RGB]{3}$")): "String só pode conter os caracteres R, G e B e ter 3 caracteres";
+        Channel[] newPPMChannels = new Channel[3];
+
+        for (int i = 0; i < 3; i++) {
+            String channelLetter = order.substring(i, i + 1);
+            newPPMChannels[i] = switch (channelLetter) {
+                case "R" -> this.redChannel.copyChannel();
+                case "G" -> this.greenChannel.copyChannel();
+                case "B" -> this.blueChannel.copyChannel();
+                default -> throw new IllegalStateException("Valor inesperado: " + channelLetter);
+            };
+        }
+
+        return new PPM(newPPMChannels[0], newPPMChannels[1], newPPMChannels[2]);
+    }
 }
+

@@ -22,6 +22,10 @@ public class PGM {
         return this.grayChannel.maxValue;
     }
 
+    public Channel getChannel() {
+        return this.grayChannel;
+    }
+
     public int get(int i, int j) {
         return this.grayChannel.get(i, j);
     }
@@ -53,5 +57,9 @@ public class PGM {
 
     public PGM minus(PGM subtrahend) {
         return new PGM(this.grayChannel.minus(subtrahend.grayChannel));
+    }
+
+    public Channel extractChannel() {
+        return this.grayChannel.copyChannel();
     }
 }

@@ -21,13 +21,18 @@ public class Channel {
     }
 
     public void set(int i, int j, int value) {
-        assert (value > 0) : "Valor do pixel deve ser maior ou igual a zero";
-        assert (value <= this.maxValue) : "Valor do pixel deve ser menor ou igual ao valor máximo";
+        assert (value > 0): "Valor do pixel deve ser maior ou igual a zero";
+        assert (value <= this.maxValue): "Valor do pixel deve ser menor ou igual ao valor máximo";
+
         this.data[i][j] = value;
     }
 
     public int get(int i, int j) {
         return this.data[i][j];
+    }
+
+    public int getMaxValue() {
+        return this.maxValue;
     }
 
     public Channel cloneChannel() {
@@ -49,7 +54,7 @@ public class Channel {
         Channel newChannel = this.cloneChannel();
         for (int i = 0; i < newChannel.height; i++) {
             for (int j = 0; j < newChannel.width; j++) {
-                newChannel.set(i, j, operation.apply(this.data[i][j], newChannel.maxValue));
+                newChannel.set(i, j, this.data[i][j]);
             }
         }
 
@@ -117,8 +122,9 @@ public class Channel {
     public int[] getHistogram() {
         int[] histogram = new int[this.maxValue + 1];
         for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++)
+            for (int j = 0; j < this.width; j++) {
                 histogram[this.data[i][j]]++;
+            }
         }
 
         return histogram;

@@ -172,9 +172,9 @@ public class NetpbmReader {
         readHeader();
 
         // Inicializando canais de cores
-        Channel redChannel = new Channel(this.lines, this.columns, this.bpp);
-        Channel greenChannel = new Channel(this.lines, this.columns, this.bpp);
-        Channel blueChannel = new Channel(this.lines, this.columns, this.bpp);
+        Channel redChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel greenChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel blueChannel = new Channel(this.lines, this.columns, this.maxVal);
 
         // Lendo valores ASCII
         for (int i = 0; i < lines; i++) {

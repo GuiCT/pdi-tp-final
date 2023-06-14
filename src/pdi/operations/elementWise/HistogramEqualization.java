@@ -2,24 +2,31 @@ package pdi.operations.elementWise;
 
 import pdi.Channel;
 
-import java.util.Arrays;
-
 public class HistogramEqualization implements ElementWiseOperation {
-    private final int[] newValues;
+    private final int[] mapping;
 
     public HistogramEqualization(Channel channel) {
-        int totalPixels = channel.width * channel.height;
+        int maxValue = channel.getMaxValue();
+        int numberOfPixels = channel.width * channel.height;
         int[] histogram = channel.getHistogram();
-        double[] probability = Arrays.stream(histogram)
-                .mapToDouble(value -> ((double) value) / ((double) totalPixels))
-                .toArray();
-        this.newValues = Arrays.stream(probability)
-                .mapToInt(value -> (int) Math.round(value * channel.maxValue))
-                .toArray();
+        double[] probabilities = new double[histogram.length];
+        for (int i = 0; i < histogram.length; i++) {
+            probabilities[i] = 
+                ((double) histogram[i]) /
+                ((double) numberOfPixels);
+        }
+        this.mapping = new int[histogram.length];
+        for (int i = 0; i < histogram.length; i++) {
+            double sumProbabilities = 0;
+            for (int j = 0; j <= i; j++) {
+                sumProbabilities += probabilities[j];
+            }
+            this.mapping[i] = (int) sumProbabilities * maxValue;
+        }
     }
 
     @Override
-    public int apply(int pixel, int maxValue) {
-        return this.newValues[pixel];
+    public int apply(int value, int maxValue) {
+        return this.mapping[value];
     }
 }
