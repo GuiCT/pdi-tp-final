@@ -2,8 +2,9 @@ package exercises;
 import pdi.Channel;
 import pdi.PGM;
 import pdi.PPM;
-import pdi.io.NetpbmReader;
-import pdi.io.NetpbmWriter;
+import pdi.io.PGM.PGMWriter;
+import pdi.io.PPM.PPMReader;
+import pdi.io.PPM.PPMWriter;
 import pdi.operations.elementWise.Darken;
 import pdi.operations.elementWise.Lighten;
 
@@ -13,14 +14,14 @@ public class Aula7 {
     public static void main(String[] args) {
         try {
             // Extração dos 3 canais
-            PPM lenna = new NetpbmReader().readPPM("resources/2023-05-10/lenna.ppm");
+            PPM lenna = PPMReader.readPPM("resources/2023-05-10/lenna.ppm");
             Channel[] channels = lenna.extractChannels();
             PGM lennaRedChannel = new PGM(channels[0]);
             PGM lennaGreenChannel = new PGM(channels[1]);
             PGM lennaBlueChannel = new PGM(channels[2]);
-            new NetpbmWriter(lennaRedChannel, "resources/2023-05-10/lennaRedChannel.ppm").saveFile(false);
-            new NetpbmWriter(lennaGreenChannel, "resources/2023-05-10/lennaGreenChannel.ppm").saveFile(false);
-            new NetpbmWriter(lennaBlueChannel, "resources/2023-05-10/lennaBlueChannel.ppm").saveFile(false);
+            PGMWriter.writeASCII(lennaRedChannel, "resources/2023-05-10/lennaRedChannel.pgm");
+            PGMWriter.writeASCII(lennaGreenChannel, "resources/2023-05-10/lennaGreenChannel.pgm");
+            PGMWriter.writeASCII(lennaBlueChannel, "resources/2023-05-10/lennaBlueChannel.pgm");
             // Alteração de um canal e recomposição
             // Diminuir o vermelho e recompor o PPM
             PGM redChannelDarkened = lennaRedChannel
@@ -32,7 +33,7 @@ public class Aula7 {
                 lennaGreenChannel.extractChannel(),
                 lennaBlueChannel.extractChannel()
             );
-            new NetpbmWriter(lennaRedDarkened, "resources/2023-05-10/lennaRedDarkened.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaRedDarkened, "resources/2023-05-10/lennaRedDarkened.ppm");
             // Aumentar o azul
             PGM blueChannelLightened = lennaBlueChannel
                 .elementWiseOperation(
@@ -43,23 +44,23 @@ public class Aula7 {
                 lennaGreenChannel.extractChannel(),
                 blueChannelLightened.extractChannel()
             );
-            new NetpbmWriter(lennaBlueLightened, "resources/2023-05-10/lennaBlueLightened.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaBlueLightened, "resources/2023-05-10/lennaBlueLightened.ppm");
             // Misturar os canais e visualizando
             // RBG
             PPM lennaRBG = lenna.permutateChannels("RBG");
-            new NetpbmWriter(lennaRBG, "resources/2023-05-10/lennaRBG.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaRBG, "resources/2023-05-10/lennaRBG.ppm");
             // GRB
             PPM lennaGRB = lenna.permutateChannels("GRB");
-            new NetpbmWriter(lennaGRB, "resources/2023-05-10/lennaGRB.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaGRB, "resources/2023-05-10/lennaGRB.ppm");
             // GBR
             PPM lennaGBR = lenna.permutateChannels("GBR");
-            new NetpbmWriter(lennaGBR, "resources/2023-05-10/lennaGBR.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaGBR, "resources/2023-05-10/lennaGBR.ppm");
             // BRG
             PPM lennaBRG = lenna.permutateChannels("BRG");
-            new NetpbmWriter(lennaBRG, "resources/2023-05-10/lennaBRG.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaBRG, "resources/2023-05-10/lennaBRG.ppm");
             // BGR
             PPM lennaBGR = lenna.permutateChannels("BGR");
-            new NetpbmWriter(lennaBGR, "resources/2023-05-10/lennaBGR.ppm").saveFile(false);
+            PPMWriter.writeASCII(lennaBGR, "resources/2023-05-10/lennaBGR.ppm");
         } catch (IOException e) {
             e.printStackTrace();
         }
