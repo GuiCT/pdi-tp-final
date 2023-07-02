@@ -1,9 +1,12 @@
 import com.sun.jdi.InvalidTypeException;
+
+import pdi.Channel;
 import pdi.Format;
 import pdi.PGM;
 import pdi.PPM;
 import pdi.io.PGM.PGMReader;
 import pdi.io.PPM.PPMReader;
+import pdi.operations.areaWise.Mean;
 import utils.Status;
 
 import java.io.File;
@@ -33,19 +36,19 @@ public class Main {
 
     private void printHeader() {
         System.out.println("""
-    Trabalho de Processamento Digital de Imagens.
-    Alunos: Guilherme Cesar Tomiasi e Carlos Eduardo Fernandes de Santana
-    ================================================================================
-    """);
+                Trabalho de Processamento Digital de Imagens.
+                Alunos: Guilherme Cesar Tomiasi e Carlos Eduardo Fernandes de Santana
+                ================================================================================
+                """);
     }
 
     private void printMenu() throws IOException {
         System.out.println("""
-    Opções:
-    1 - Carregar um arquivo .pgm
-    2 - Carregar um arquivo .ppm
-    3 - Manejar uma imagem carregada
-    4 - Sair""");
+                Opções:
+                1 - Carregar um arquivo .pgm
+                2 - Carregar um arquivo .ppm
+                3 - Manejar uma imagem carregada
+                4 - Sair""");
     }
 
     private void dealChosenOption() {
@@ -103,7 +106,8 @@ public class Main {
 
     private void loadPGM() throws IOException {
         File[] availableFiles = listAllFiles(".pgm");
-        if (availableFiles == null) return;
+        if (availableFiles == null)
+            return;
         File chosenFile = choseOneFile(availableFiles);
         PGM chosenFileImage = PGMReader.readPGM(chosenFile.getPath());
         this.statuses.add(new Status(Format.PGM, chosenFile, chosenFileImage));
@@ -111,7 +115,8 @@ public class Main {
 
     private void loadPPM() throws IOException {
         File[] availableFiles = listAllFiles(".ppm");
-        if (availableFiles == null) return;
+        if (availableFiles == null)
+            return;
         File chosenFile = choseOneFile(availableFiles);
         PPM chosenFileImage = PPMReader.readPPM(chosenFile.getPath());
         this.statuses.add(new Status(Format.PPM, chosenFile, chosenFileImage));

@@ -1,4 +1,5 @@
 package exercises;
+
 import pdi.Channel;
 import pdi.PGM;
 import pdi.PPM;
@@ -25,25 +26,21 @@ public class Aula7 {
             // Alteração de um canal e recomposição
             // Diminuir o vermelho e recompor o PPM
             PGM redChannelDarkened = lennaRedChannel
-                .elementWiseOperation(
-                    new Darken((short) 50)
-                );
+                    .elementWiseOperation(
+                            new Darken((short) 50));
             PPM lennaRedDarkened = new PPM(
-                redChannelDarkened.extractChannel(),
-                lennaGreenChannel.extractChannel(),
-                lennaBlueChannel.extractChannel()
-            );
+                    redChannelDarkened.extractChannel(),
+                    lennaGreenChannel.extractChannel(),
+                    lennaBlueChannel.extractChannel());
             PPMWriter.writeASCII(lennaRedDarkened, "resources/2023-05-10/lennaRedDarkened.ppm");
             // Aumentar o azul
             PGM blueChannelLightened = lennaBlueChannel
-                .elementWiseOperation(
-                    new Lighten((short) 50)
-                );
+                    .elementWiseOperation(
+                            new Lighten((short) 50));
             PPM lennaBlueLightened = new PPM(
-                lennaRedChannel.extractChannel(),
-                lennaGreenChannel.extractChannel(),
-                blueChannelLightened.extractChannel()
-            );
+                    lennaRedChannel.extractChannel(),
+                    lennaGreenChannel.extractChannel(),
+                    blueChannelLightened.extractChannel());
             PPMWriter.writeASCII(lennaBlueLightened, "resources/2023-05-10/lennaBlueLightened.ppm");
             // Misturar os canais e visualizando
             // RBG

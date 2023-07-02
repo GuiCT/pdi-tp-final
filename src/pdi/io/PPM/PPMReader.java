@@ -1,23 +1,75 @@
 package pdi.io.PPM;
 
-import pdi.Channel;
-import pdi.PPM;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.Scanner;
 
-public class PPMReader {
-    private File file;
-    private String magicIdentifier;
-    private int columns;
-    private int lines;
-    private int maxVal;
-    private Scanner fileScanner;
+import pdi.Channel;
+import pdi.PPM;
 
+/**
+ * <h1>Leitora de arquivos do formato PPM.</h1>
+ * <p>
+ * Encapsula estado de leitura, não podendo ser instanciada fora de seu próprio
+ * escopo.
+ * Dessa forma, toda vez que uma leitura é realizada, uma nova instância é
+ * criada.
+ * </p>
+ */
+public class PPMReader {
+    /**
+     * Arquivo a ser lido.
+     */
+    private File file;
+    /**
+     * Identificador do arquivo.
+     */
+    private String magicIdentifier;
+    /**
+     * Número de colunas da imagem.
+     */
+    private int columns;
+    /**
+     * Número de linhas da imagem.
+     */
+    private int lines;
+    /**
+     * Valor máximo assumido por um pixel.
+     */
+    private int maxVal;
+    /**
+     * Scanner utilizado para a leitura do arquivo.
+     */
+    private Scanner fileScanner;
+    /**
+     * BufferedInputStream utilizado para a leitura do arquivo.
+     */
+    private BufferedInputStream bufferedInputStream;
+
+    /**
+     * Método utilizado para a leitura de um arquivo PPM.
+     * 
+     * @param filePath Caminho do arquivo a ser lido.
+     * @return PPM Objeto PPM com os dados lidos.
+     * @throws IOException Caso ocorra algum erro na leitura do arquivo.
+     */
     public static PPM readPPM(String filePath) throws IOException {
         PPMReader reader = new PPMReader();
         return reader.read(filePath);
     }
 
+    /**
+     * Método privado que utiliza a instância criada para ler o arquivo.
+     * Não deve ser chamado diretamente.
+     * 
+     * @param filePath Caminho do arquivo a ser lido.
+     * @return PPM Objeto PPM com os dados lidos.
+     * @throws IOException Caso ocorra algum erro na leitura do arquivo.
+     */
     private PPM read(String filePath) throws IOException {
         this.file = new File(filePath);
 
@@ -33,17 +85,28 @@ public class PPMReader {
         };
     }
 
+    /**
+     * Método privado que valida o identificador do arquivo.
+     * Isto é, verifica se o identificador mágico é P3 ou P6.
+     * 
+     * @return boolean true se o identificador for válido, false caso contrário.
+     * @throws FileNotFoundException Caso o arquivo não seja encontrado.
+     */
     private boolean validateIdentifier() throws FileNotFoundException {
         Scanner sc = new Scanner(
                 new BufferedInputStream(
-                        new FileInputStream(this.file)
-                )
-        );
+                        new FileInputStream(this.file)));
         this.magicIdentifier = sc.nextLine();
         sc.close();
         return this.magicIdentifier.matches("P[36]");
     }
 
+    /**
+     * Método privado que lê o cabeçalho do arquivo.
+     * 
+     * @return int Número de bytes lidos.
+     * @throws FileNotFoundException Caso o arquivo não seja encontrado.
+     */
     private int readHeader() throws FileNotFoundException {
         FileInputStream scannerFIS = new FileInputStream(this.file);
         BufferedInputStream scannerBIS = new BufferedInputStream(scannerFIS);
@@ -79,6 +142,12 @@ public class PPMReader {
         return movedBytes;
     }
 
+    /**
+     * Método privado que lê o arquivo PPM no formato ASCII.
+     * 
+     * @return PPM Objeto PPM com os dados lidos.
+     * @throws FileNotFoundException Caso o arquivo não seja encontrado.
+     */
     private PPM readASCII() throws FileNotFoundException {
         // Lê cabeçalho e lê informações sobre dimensionalidade e valor máximo
         readHeader();
@@ -101,14 +170,20 @@ public class PPMReader {
         return new PPM(redChannel, greenChannel, blueChannel);
     }
 
+    /**
+     * Método privado que lê o arquivo PPM no formato RAW.
+     * 
+     * @return PPM Objeto PPM com os dados lidos.
+     * @throws IOException Caso ocorra algum erro na leitura do arquivo.
+     */
     private PPM readRaw() throws IOException {
         // Lê cabeçalho e lê informações sobre dimensionalidade e valor máximo
         int movedBytes = readHeader();
         // Não utiliza mais o fileScanner
         this.fileScanner.close();
 
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(this.file));
-        long actuallyMovedBytes = bufferedInputStream.skip(movedBytes);
+        this.bufferedInputStream = new BufferedInputStream(new FileInputStream(this.file));
+        long actuallyMovedBytes = this.bufferedInputStream.skip(movedBytes);
 
         // Verifica se o número de bytes pulados é igual ao número de bytes no header
         if (actuallyMovedBytes != movedBytes) {
@@ -122,13 +197,13 @@ public class PPMReader {
 
         for (int i = 0; i < this.lines; i++) {
             for (int j = 0; j < this.columns; j++) {
-                redChannel.set(i, j, bufferedInputStream.read());
-                greenChannel.set(i, j, bufferedInputStream.read());
-                blueChannel.set(i, j, bufferedInputStream.read());
+                redChannel.set(i, j, this.bufferedInputStream.read());
+                greenChannel.set(i, j, this.bufferedInputStream.read());
+                blueChannel.set(i, j, this.bufferedInputStream.read());
             }
         }
 
-        bufferedInputStream.close();
+        this.bufferedInputStream.close();
         return new PPM(redChannel, greenChannel, blueChannel);
     }
 }

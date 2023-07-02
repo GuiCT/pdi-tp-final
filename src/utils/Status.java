@@ -9,8 +9,8 @@ public record Status(
         Integer id,
         Format format,
         File file,
-        Object image
-) {
+        Object image) {
+
     public static Integer nextId = 0;
 
     public Status(Format format, File file, Object image) {

@@ -10,8 +10,7 @@ public class Aula6 {
         try {
             PGM phistf = PGMReader.readPGM("resources/2023-04-19/phistf.pgm");
             PGM phistfEqualizedHistogram = phistf.elementWiseOperation(
-                new HistogramEqualization(phistf.getChannel())
-            );
+                    new HistogramEqualization(phistf.getChannel()));
             PGMWriter.writeASCII(phistfEqualizedHistogram, "resources/2023-04-19/phistfEqualizedHistogram.pgm");
         } catch (Exception e) {
             e.printStackTrace();
