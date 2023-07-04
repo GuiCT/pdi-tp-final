@@ -191,9 +191,9 @@ public class PPMReader {
         }
 
         // Inicializando canais
-        Channel redChannel = new Channel(this.lines, this.columns, this.maxVal);
-        Channel greenChannel = new Channel(this.lines, this.columns, this.maxVal);
-        Channel blueChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel redChannel = new Channel(this.columns, this.lines, this.maxVal);
+        Channel greenChannel = new Channel(this.columns, this.lines, this.maxVal);
+        Channel blueChannel = new Channel(this.columns, this.lines, this.maxVal);
 
         for (int i = 0; i < this.lines; i++) {
             for (int j = 0; j < this.columns; j++) {

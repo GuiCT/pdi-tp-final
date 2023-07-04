@@ -188,7 +188,7 @@ public class PGMReader {
         }
 
         // Inicializando canal
-        Channel grayChannel = new Channel(this.lines, this.columns, this.maxVal);
+        Channel grayChannel = new Channel(this.columns, this.lines, this.maxVal);
 
         for (int i = 0; i < this.lines; i++) {
             for (int j = 0; j < this.columns; j++) {
