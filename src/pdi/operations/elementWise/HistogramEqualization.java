@@ -44,7 +44,7 @@ public class HistogramEqualization implements ElementWiseOperation {
                 sumProbabilities += probabilities[j];
             }
             // Multiplica a soma das probabilidades pelo valor máximo
-            this.mapping[i] = (int) sumProbabilities * maxValue;
+            this.mapping[i] = (int) Math.round(sumProbabilities * (double) maxValue);
         }
     }
 
